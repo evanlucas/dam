@@ -10,6 +10,95 @@ var fs = require('fs')
   , chalk = require('chalk')
   , once = require('once')
   , strip = chalk.stripColor
+  , marked = require('marked')
+  , Renderer = marked.Renderer
+  , Table = require('cli-table')
+
+var currentTable
+  , isHead = true
+  , currentRow = []
+
+Renderer.prototype.code = function(code, lang, escaped) {
+  return chalk.grey(code)+'\n\n'
+}
+
+Renderer.prototype.heading = function(text, level, raw) {
+  switch (level) {
+    case 1:
+      return chalk.green.underline.bold(text)+'\n\n'
+    case 2:
+      return chalk.blue.underline.bold(text)+'\n\n'
+    default:
+      return chalk.underline(text)+'\n\n'
+  }
+}
+
+Renderer.prototype.hr = function() {
+  return chalk.grey.underline('------------------------------')+'\n\n'
+}
+
+Renderer.prototype.list = function(body, ordered) {
+  return '\n'+body+'\n'
+}
+
+Renderer.prototype.listitem = function(text) {
+  return '▪︎ '+text+'\n'
+}
+
+Renderer.prototype.paragraph = function(text) {
+  return text+'\n\n'
+}
+
+Renderer.prototype.strong = function(text) {
+  return chalk.cyan.bold(text)
+}
+
+Renderer.prototype.em = function(text) {
+  return chalk.italic.inverse(text)
+}
+
+Renderer.prototype.codespan = function(text) {
+  return chalk.bold(text)
+}
+
+Renderer.prototype.br = function() {
+  return '\n'
+}
+
+Renderer.prototype.link = function(href, title, text) {
+  return chalk.underline.yellow(href)
+}
+
+Renderer.prototype.image = function(href, title, text) {
+  return chalk.underline.magenta(href)
+}
+
+Renderer.prototype.tablecell = function(content, flags) {
+  isHead = flags.header
+  currentRow.push(content)
+  return ''
+}
+
+Renderer.prototype.tablerow = function(content) {
+  if (isHead) {
+    currentTable = new Table({
+      head: currentRow
+    })
+    isHead = false
+  } else {
+    if (currentTable) {
+      currentTable.push(currentRow)
+    }
+  }
+  currentRow = []
+  return ''
+}
+
+Renderer.prototype.table = function(header, body) {
+  var t = currentTable.toString()+'\n\n'
+  currentTable = null
+  return t
+}
 
 var pagerOpts = {
   pager: 'less'
@@ -17,10 +106,6 @@ var pagerOpts = {
 }
 
 var tr = through(write, end)
-
-process.stderr.on('error', function(err) {
-  console.log('STDIN ERR', err)
-})
 
 if (!args.length) {
   process.stdin.setEncoding('utf8')
@@ -31,86 +116,32 @@ if (!args.length) {
 
 } else {
   getPath(args[0], function(err, fp) {
-    if (err) throw err
+    if (err) error(err)
     fs.createReadStream(fp, { encoding: 'utf8' })
       .pipe(tr)
       .pipe(pager(pagerOpts))
+      //.pipe(process.stdout)
   })
-
 }
 
-function hr() {
-  return chalk.grey.underline('------------------------------')
-}
-
-function head(match, p1) {
-  if (~match.indexOf('===')) {
-    return chalk.green.underline.bold(strip(p1))+'\n\n'
-  } else if (~match.indexOf('---')) {
-    return chalk.blue.underline.bold(strip(p1))+'\n\n'
-  }
-  return match
-}
-
-function headatx(match, p1, p2) {
-  var level = p1.length
-  switch (level) {
-    case 1:
-      return chalk.green.underline.bold(strip(p2))+'\n\n'
-    case 2:
-      return chalk.blue.underline.bold(strip(p2))+'\n\n'
-    default:
-      return chalk.underline(strip(p2))+'\n\n'
-  }
-}
-
-function strong(match, p1) {
-  return chalk.cyan.bold(strip(p1))
-}
-
-function code(match, p1, p2, p3) {
-  if (p1 === '```')
-    return chalk.grey(strip(p3))+'\n\n'
-  else
-    return chalk.grey(strip(match.replace(/^[ ]{4}/gm, '')))
-}
-
-function em(match, p1, p2) {
-  return chalk.italic.inverse(strip(p2))
-}
-
-function codeSingle(match, p1, p2, p3) {
-  return chalk.bold(' '+strip(p3))
-}
 
 function write(data) {
   if (data) {
-    data = data
-      .replace(/^(.+)[ \t]*\n-+[ \t]*\n+/gm, head)
-      .replace(/^[ ]{0,2}([ ]?\*[ ]?){3,}[ \t]*$/gm, hr)
-      .replace(/^[ ]{0,2}([ ]?\-[ ]?){3,}[ \t]*$/gm, hr)
-      .replace(/^[ ]{0,2}([ ]?\_[ ]?){3,}[ \t]*$/gm, hr)
-      .replace(/^(.+)[ \t]*\n=+[ \t]*\n+/gm, head)
-      .replace(/m?(\#{1,6})[ \t]*(.+?)[ \t]*\#*\n+/gm, headatx)
-      .replace(
-        /^ *(`{3,}|~{3,}) *(\S+)? *\n([\s\S]+?)\s*\1 *(?:\n+|$)/gm
-      , code
-      )
-      .replace(/^( {4}[^\n]+\n*)+/gm, code)
-      .replace(/(^|[^\\])(`+)([^\r]*?[^`])\2(?!`)/gm, codeSingle)
-      .replace(/\*\*([^\*]+)\*\*/gm, strong)
-      .replace(/(\*|_)(?=\S)([^\r]*?\S)\1/g, em)
-      .replace(
-        /\\n+(?=\\1?(?:[-*_] *){3,}(?:\\n+|$))/gm
-      , "1 - $1, 2 - $2"
-      )
-
-    this.emit('data', data)
+    marked(String(data), {
+      renderer: new Renderer
+    , smartypants: true
+    }, function(err, content) {
+      if (err) {
+        this.emit('error', err)
+      } else {
+        this.queue(content)
+      }
+    }.bind(this))
   }
 }
 
 function end() {
-  this.emit('end')
+  this.queue(null)
 }
 
 function getPath(fp, cb) {
@@ -171,4 +202,9 @@ function getPath(fp, cb) {
   setTimeout(function() {
     cb(new Error('Cannot find file'))
   }, 1000)
+}
+
+function error(err) {
+  console.error('Error:', err)
+  process.exit(1)
 }
