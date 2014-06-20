@@ -1,0 +1,31 @@
+{
+  "name": "dam",
+  "version": "0.0.0",
+  "description": "Port of mad to node. Man for markdown",
+  "main": "index.js",
+  "dependencies": {
+    "chalk": "~0.4.0",
+    "once": "~1.3.0",
+    "through": "~2.3.4"
+  },
+  "bin": {
+    "dam": "index.js"
+  },
+  "license": "MIT",
+  "keywords": [
+    "mad",
+    "man",
+    "dam",
+    "markdown",
+    "md"
+  ],
+  "author": "Evan Lucas <evanlucas@me.com>",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/evanlucas/dam"
+  },
+  "homepage": "https://github.com/evanlucas/dam",
+  "bugs": {
+    "url": "https://github.com/evanlucas/dam/issues"
+  }
+}
