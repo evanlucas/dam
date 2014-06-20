@@ -2,6 +2,12 @@
 
 Port of [mad](https://github.com/visionmedia/mad) to node. Man for markdown.
 
+## Install
+
+```bash
+$ npm install -g dam
+```
+
 ## Usage
 
 Read from stdin
