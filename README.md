@@ -37,13 +37,20 @@ If no readme is found, then it will show the first markdown file it finds. If no
 
 ## Example
 
-![Example](screenshot.png)
+![Example](https://raw.githubusercontent.com/evanlucas/dam/master/screenshot.png)
 
 ## Credits
 
 - [TJ Holowaychuk](https://github.com/visionmedia) for [mad](https://github.com/visionmedia/mad)
 - [Domonic Tarr](https://github.com/dominictarr) for [default-pager](https://github.com/dominictarr/default-pager)
   - `dam` uses a slightly modified version of `default-pager`
+
+## TODO
+
+- Fix nested list indentation
+- Support color configuration
+- Possibly render images to terminal (Not sure if less would support such a thing?)
+- Add path configuration
 
 ## Author
 
