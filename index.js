@@ -17,6 +17,7 @@ var fs = require('fs')
 var currentTable
   , isHead = true
   , currentRow = []
+  , align = []
 
 Renderer.prototype.code = function(code, lang, escaped) {
   return chalk.grey(code)+'\n\n'
@@ -76,6 +77,10 @@ Renderer.prototype.image = function(href, title, text) {
 Renderer.prototype.tablecell = function(content, flags) {
   isHead = flags.header
   currentRow.push(content)
+  if (isHead) {
+    if (flags.align === 'center') flags.align = 'middle'
+    align.push(flags.align || 'left')
+  }
   return ''
 }
 
@@ -83,6 +88,7 @@ Renderer.prototype.tablerow = function(content) {
   if (isHead) {
     currentTable = new Table({
       head: currentRow
+    , colAligns: align
     })
     isHead = false
   } else {
@@ -97,6 +103,7 @@ Renderer.prototype.tablerow = function(content) {
 Renderer.prototype.table = function(header, body) {
   var t = currentTable.toString()+'\n\n'
   currentTable = null
+  align = []
   return t
 }
 
@@ -120,7 +127,6 @@ if (!args.length) {
     fs.createReadStream(fp, { encoding: 'utf8' })
       .pipe(tr)
       .pipe(pager(pagerOpts))
-      //.pipe(process.stdout)
   })
 }
 
