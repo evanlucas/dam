@@ -37,7 +37,7 @@ If no readme is found, then it will show the first markdown file it finds. If no
 
 ## Example
 
-[Example](screenshot.png)
+![Example](screenshot.png)
 
 ## Credits
 
