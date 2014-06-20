@@ -35,6 +35,10 @@ When passing a package name, it will search the following:
 
 If no readme is found, then it will show the first markdown file it finds. If no markdown files are found, then `dam` will exit 
 
+## Example
+
+[Example](screenshot.png)
+
 ## Credits
 
 - [TJ Holowaychuk](https://github.com/visionmedia) for [mad](https://github.com/visionmedia/mad)
