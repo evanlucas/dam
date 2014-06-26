@@ -114,19 +114,28 @@ var pagerOpts = {
 
 var tr = through(write, end)
 
+var usePager = true
+if (args.length && ~args.indexOf('--no-pager')) {
+  usePager = false
+  args.splice(args.indexOf('--no-pager'), 1)
+}
+var to = usePager
+  ? pager(pagerOpts)
+  : process.stdout
+
 if (!args.length) {
   process.stdin.setEncoding('utf8')
 
   process.stdin
     .pipe(tr)
-    .pipe(pager(pagerOpts))
+    .pipe(to)
 
 } else {
   getPath(args[0], function(err, fp) {
     if (err) error(err)
     fs.createReadStream(fp, { encoding: 'utf8' })
       .pipe(tr)
-      .pipe(pager(pagerOpts))
+      .pipe(to)
   })
 }
 
