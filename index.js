@@ -119,6 +119,11 @@ if (args.length && ~args.indexOf('--no-pager')) {
   usePager = false
   args.splice(args.indexOf('--no-pager'), 1)
 }
+
+if (~args.indexOf('--help') || ~args.indexOf('-h')) {
+  args[0] = 'usage.md'
+}
+
 var to = usePager
   ? pager(pagerOpts)
   : process.stdout
