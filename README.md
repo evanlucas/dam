@@ -28,6 +28,12 @@ Pass a package name
 $ dam npm
 ```
 
+Skip the pager, pipe to stdout
+
+```bash
+$ dam --no-pager npm
+```
+
 When passing a package name, it will search the following:
 
 - <pwd>/node_modules/<package>/<readme>
