@@ -1,6 +1,6 @@
 {
   "name": "dam",
-  "version": "0.3.0",
+  "version": "0.3.1",
   "description": "Port of mad to node. Man for markdown",
   "main": "index.js",
   "dependencies": {
