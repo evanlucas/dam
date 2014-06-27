@@ -20,7 +20,10 @@ var currentTable
   , align = []
 
 Renderer.prototype.code = function(code, lang, escaped) {
-  return chalk.grey(code)+'\n\n'
+  var splits = code.split(/\n|\r\n/)
+  return splits.map(function(r) {
+    return chalk.grey(r)
+  }).join('\n')+'\n\n'
 }
 
 Renderer.prototype.heading = function(text, level, raw) {
