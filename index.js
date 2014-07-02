@@ -127,23 +127,27 @@ if (~args.indexOf('--help') || ~args.indexOf('-h')) {
   args[0] = 'usage.md'
 }
 
-var to = usePager
-  ? pager(pagerOpts)
-  : process.stdout
-
 if (!args.length) {
   process.stdin.setEncoding('utf8')
-
+  var to = usePager
+    ? pager(pagerOpts)
+    : process.stdout
   process.stdin
     .pipe(tr)
     .pipe(to)
 
 } else {
   getPath(args[0], function(err, fp) {
-    if (err) error(err)
-    fs.createReadStream(fp, { encoding: 'utf8' })
-      .pipe(tr)
-      .pipe(to)
+    if (err) {
+      return error(err)
+    } else {
+    var to = usePager
+      ? pager(pagerOpts)
+      : process.stdout
+      fs.createReadStream(fp, { encoding: 'utf8' })
+        .pipe(tr)
+        .pipe(to)
+    }
   })
 }
 
