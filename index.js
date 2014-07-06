@@ -62,6 +62,11 @@ Renderer.prototype.em = function(text) {
 }
 
 Renderer.prototype.codespan = function(text) {
+  text = text
+    .replace(/&lt;/g, '<')
+    .replace(/&gt;/g, '>')
+    .replace(/&quot;/g, '"')
+    .replace(/&#39;/g, '\'')
   return chalk.bold(text)
 }
 
