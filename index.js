@@ -19,6 +19,16 @@ var currentTable
   , currentRow = []
   , align = []
 
+Renderer.prototype.blockquote = function(quote) {
+  var splits = quote.trim().split(/\n|\r\n/)
+  var o = splits.map(function(r) {
+    if (!r) return chalk.bgWhite(' ')
+    return util.format('%s %s', chalk.bgWhite(' '), r)
+  }).join('\n')
+  return util.format('%s\n%s\n%s\n\n', chalk.bgWhite(' '),
+    o, chalk.bgWhite(' '))
+}
+
 Renderer.prototype.code = function(code, lang, escaped) {
   var splits = code.split(/\n|\r\n/)
   return splits.map(function(r) {
