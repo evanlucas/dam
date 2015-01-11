@@ -197,16 +197,16 @@ function getPath(fp, cb) {
     cb(null, result)
   }
 
-  fs.exists(fp, function(e) {
-    if (e) cb(null, fp)
+  fs.stat(fp, function(err, stats) {
+    if (stats && stats.isFile()) cb(null, fp)
   })
 
   var local = path.join(process.cwd(), 'node_modules', fp)
-  fs.exists(local, function(e) {
-    if (e && !found) {
+  fs.stat(local, function(err, stats) {
+    if (stats && stats.isDirectory() && !found) {
       fs.readdir(local, function(err, files) {
         if (err) return cb(err)
-        if (found) return
+        if (found || !files.length) return
         var rme = files.reduce(function(set, file) {
           file = file.toLowerCase()
           if (set.readme) return set
@@ -228,11 +228,11 @@ function getPath(fp, cb) {
 
   var glob = process.env.NODE_PATH || '/usr/local/lib/node_modules'
   glob = path.join(glob, fp)
-  fs.exists(glob, function(e) {
-    if (e && !found) {
+  fs.stat(glob, function(err, stats) {
+    if (stats && stats.isDirectory() && !found) {
       fs.readdir(glob, function(err, files) {
         if (err) return cb(err)
-        if (found) return
+        if (found || !files.length) return
         var rme = files.reduce(function(set, file) {
           file = file.toLowerCase()
           if (set.readme) return set
