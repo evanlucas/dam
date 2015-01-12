@@ -156,9 +156,9 @@ if (!args.length) {
     if (err) {
       return error(err)
     } else {
-    var to = usePager
-      ? pager(pagerOpts)
-      : process.stdout
+      var to = usePager
+        ? pager(pagerOpts)
+        : process.stdout
       fs.createReadStream(fp, { encoding: 'utf8' })
         .pipe(tr)
         .pipe(to)
