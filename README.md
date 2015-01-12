@@ -36,8 +36,8 @@ $ dam --no-pager npm
 
 When passing a package name, it will search the following:
 
-- <pwd>/node_modules/<package>/<readme>
-- /usr/local/lib/node_modules/<package>/<readme>
+- pwd/node_modules/package/readme
+- /usr/local/lib/node_modules/package/readme
 
 If no readme is found, then it will show the first markdown file it finds. If no markdown files are found, then `dam` will exit 
 
