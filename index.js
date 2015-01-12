@@ -25,8 +25,11 @@ Renderer.prototype.blockquote = function(quote) {
     if (!r) return chalk.bgWhite(' ')
     return util.format('%s %s', chalk.bgWhite(' '), r)
   }).join('\n')
-  return util.format('%s\n%s\n%s\n\n', chalk.bgWhite(' '),
-    o, chalk.bgWhite(' '))
+  return util.format( '%s\n%s\n%s\n\n'
+                    , chalk.bgWhite(' ')
+                    , o
+                    , chalk.bgWhite(' ')
+                    )
 }
 
 Renderer.prototype.code = function(code, lang, escaped) {
